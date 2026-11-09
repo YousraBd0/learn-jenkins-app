@@ -1,7 +1,9 @@
+
 pipeline {
     agent any
 
     stages {
+
         stage('Build') {
             agent {
                 docker {
@@ -22,27 +24,34 @@ pipeline {
                     echo "Build completed successfully!"
                 '''
             }
+        }
 
-
-            stage('Test') {
-
-                agent {
+        stage('Test') {
+            agent {
                 docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
-                }
-            
+            }
 
-                steps {
-                    sh '''
+            steps {
+                sh '''
+                    echo "Starting tests..."
                     test -f build/index.html
-                    npm test
-                    '''
-                }
+                    CI=true npm test -- --watchAll=false
+                    echo "Tests completed successfully!"
+                '''
+            }
+        }
+    }
 
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
         }
 
-
+        failure {
+            echo 'Pipeline failed. Check the console output.'
+        }
     }
 }
