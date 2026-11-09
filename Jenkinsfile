@@ -46,12 +46,10 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully!'
+        always {
+            junit 'test-results/junit.xml'
         }
 
-        failure {
-            echo 'Pipeline failed. Check the console output.'
-        }
+        
     }
 }
