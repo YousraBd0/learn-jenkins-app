@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    enivironment {
+        NETLIFY_SITE_ID = 'd20eab00-af77-4b16-9dab-00f0f23e288e'
+    }
+
     stages {
 
         stage('Build') {
@@ -26,7 +30,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Tests') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -42,6 +46,14 @@ pipeline {
                     echo "Tests completed successfully!"
                 '''
             }
+
+            post {
+        always {
+            junit 'test-results/junit.xml'
+        }
+
+        
+    }
         }
 
         stage('Deploy') {
@@ -54,18 +66,12 @@ pipeline {
 
             steps {
                 sh '''
-                    npm install netlify-cli -g   
+                    npm install netlify-cli    
                     node_modules/.bin/netlify --version 
                 '''
             }
         }
     }
 
-    post {
-        always {
-            junit 'test-results/junit.xml'
-        }
-
-        
-    }
+    
 }
