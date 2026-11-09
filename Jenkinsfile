@@ -2,20 +2,24 @@ pipeline {
     agent any
 
     stages {
-        stage('build') {
+        stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
+
             steps {
                 sh '''
-                ls -al
-                npm --version
-                npm ci
-                npm run build
-                ls -la
+                    echo "Starting React application build..."
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                    echo "Build completed successfully!"
                 '''
             }
         }
