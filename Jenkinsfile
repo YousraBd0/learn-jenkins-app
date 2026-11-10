@@ -69,7 +69,7 @@ pipeline {
         retry(3) {
             sh '''
                 echo "Installing Netlify CLI..."
-                npm install --no-save netlify-cli
+                npm install netlify-cli
             '''
         }
 
