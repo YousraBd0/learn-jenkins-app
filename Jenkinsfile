@@ -57,23 +57,35 @@ pipeline {
     }
         }
 
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-
-            steps {
-                sh '''
-                    npm install netlify-cli    
-                    node_modules/.bin/netlify --version
-                    node_modules/.bin/netlify status 
-                    node_modules/.bin/netlify deploy dir=build --prod 
-                '''
-            }
+    stage('Deploy') {
+    agent {
+        docker {
+            image 'node:18-bullseye'
+            reuseNode true
         }
+    }
+
+    steps {
+        retry(3) {
+            sh '''
+                echo "Installing Netlify CLI..."
+                npm install --no-save netlify-cli
+            '''
+        }
+
+        sh '''
+            echo "Checking Netlify CLI..."
+            ./node_modules/.bin/netlify --version
+
+            echo "Deploying React application..."
+            ./node_modules/.bin/netlify deploy \
+                --dir=build \
+                --prod \
+                --site="$NETLIFY_SITE_ID" \
+                --auth="$NETLIFY_AUTH_TOKEN"
+        '''
+    }
+}
     }
 
     
